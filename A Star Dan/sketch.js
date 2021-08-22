@@ -10,32 +10,35 @@ let start, end
 
 let w, h
 
-let cols = 10
+let cols = 30
 
-let rows = 10
+let rows = 30
 
 let grid = new Array(cols)
 
+let current
+
 let path = []
 
-let current
+
 
 function setup() 
 {
-	createCanvas(400, 400)
+
+	createCanvas(500, 500)
 	colorMode(RGB, 1)
 
 	w = width/rows
 	h = height/cols
 
+	print(grid)
+
+
+
 
 	for (let i=0; i<cols; i++)
 	{
-
-
 		grid[i] = new Array(rows);
-
-		
 	}
 
 
@@ -64,9 +67,13 @@ function setup()
 //----------------------------------------------------------------------
 
 	start = grid[0][0]
-	//print(start)
-
 	end = grid[cols-1][rows-1]
+
+
+	start.wall = false
+	end.wall = false
+
+
 
 	openSet.push(start)
 
@@ -81,18 +88,18 @@ function draw()
 	if (openSet.length > 0)
 	{
 		
-		let winner = 0;
+		let winnerIndex = 0;
 
 		for (let i=0; i<openSet.length; i++)
 		{
 			//current := the node in openSet having the lowest fScore[] value
-			if (openSet[i].f < openSet[winner].f)
+			if (openSet[i].f < openSet[winnerIndex].f)
 			{
-				winner = i
+				winnerIndex = i
 			}
 		}
 
-		current = openSet[winner]
+		current = openSet[winnerIndex]
 
 
 		if (current === end)
@@ -111,35 +118,41 @@ function draw()
 
 		for (let i=0; i<neighbors.length; i++)
 		{
-			let neighbor = neighbors[i]
+      		let neighbor = neighbors[i];
 
-			if (!closedSet.includes(neighbors))
+	      // Valid next spot?
+			if (!closedSet.includes(neighbor) && !neighbor.wall) 
 			{
-				//tentative_gScore := gScore[current] + d(current, neighbor)
-				//1 is distance between current and neighbor. 1 in the current case.
-				let tentative_gScore = current.g + 1 
+				let tentativeG = current.g + heuristic(neighbor, current)
 
-				if (openSet.includes(neighbors))
+			// Is this a better path than before?
+				let newPath = false;
+
+				if (openSet.includes(neighbor)) 
 				{
-					if (tentative_gScore < neighbor.g)
+					if (tentativeG < neighbor.g) 
 					{
-						neighbor.g = tentative_gScore
+						neighbor.g = tentativeG;
+						newPath = true;
 					}
-				}
-				else
+				} 
+
+				else 
 				{
-					neighbor.g = tentative_gScore
-					openSet.push(neighbor)
-
+					neighbor.g = tentativeG;
+					newPath = true;
+					openSet.push(neighbor);
 				}
+
+				// Yes, it's a better path
+				if (newPath) 
+				{
+					neighbor.h = heuristic(neighbor, end);
+					neighbor.f = neighbor.g + neighbor.h;
+					neighbor.previous = current;
+				}
+
 			}
-
-			neighbor.h = heuristic(neighbor, end)
-
-			neighbor.f = neighbor.g + neighbor.h
-
-
-			neighbor.previous = current
 
 		}
 
@@ -150,160 +163,68 @@ function draw()
 	{
 	    console.log('no solution');
 	    noLoop();
+
 	    return;
 	}
 
 		  // Draw current state of everything
   	background(1);
 
-
-
-
 	for (let i=0; i<cols; i++)
 	{
 		for (let j=0; j<rows; j++)
 		{
-
 			grid[i][j].show(0.5)
-
-			//print("hi")
 		}
 	}
 
 
-  for (var i = 0; i < closedSet.length; i++) 
-  {
-    closedSet[i].show(color(1, 0, 0, 0.5));
-  }
+	for (let i = 0; i < closedSet.length; i++) 
+	{
+		closedSet[i].show(color(1, 0, 0));
+	}
 
-  for (var i = 0; i < openSet.length; i++) 
-  {
-    openSet[i].show(color(0, 1, 0, 0.5));
-  }
+	for (let i = 0; i < openSet.length; i++) 
+	{
+		openSet[i].show(color(0, 1, 0));
+	}
 
-
-
-
-
-	// // Find the path
-	// path = []
-
-	// //let temp = current
+	// Find the path
+	path = []
+	let temp = current
+	path.push(temp)
 
 
+	//print(temp.previous)
+	//backtrack the path, while there is a previous one, add it, 
+	//and then set the current to that previous one. so on and so forth
+	while (temp.previous) 
+	{
+		path.push(temp.previous);
+		temp = temp.previous;
 
-	// path.push(current)
+	}
 
-	// //backtrack the path, while there is a previous one, add it, 
-	// //and then set the current to that previous one. so on and so forth
-	// if (current.previous) 
-	// {
+	print(openSet.length)
 
-	// 	path.push(current.previous);
-	// 	current = current.previous;
-	// }
-
-  path = [];
-  var temp = current;
-  path.push(temp);
-  while (temp.previous) {
-    path.push(temp.previous);
-    temp = temp.previous;
-  }
-
-
-
-	
-
-	print(path.length)
 	for (let i of path)
 	{
 		i.show(color(0,0,1))
 	}
 
-
-
-
-
 }
 
 
 
 
 
-class Spot
-{
-	constructor(i, j)
-	{
-		this.i = i
-		this.j = j
 
-
-		//f(n) = g(n) + h(n)
-		this.f = 0
-		this.g = 0
-		this.h = 0
-
-		this.neighbors = []
-
-		this.previous = undefined
-	}
-
-	show(color)
-	{
-
-		stroke(1)
-
-		fill(color)
-
-		rect(this.i*w, this.j*h, w, h)
-		//print("hello")
-
-	}
-
-	addNeighbors(grid)
-	{
-
-		let i = this.i
-		let j = this.j
-
-
-		if (i<cols-1) 	this.neighbors.push(grid[i+1][j])
-
-		if (i>1) 		this.neighbors.push(grid[i-1][j])
-
-		if (j<rows-1)   this.neighbors.push(grid[i][j+1])
-
-		if (j>0) 		this.neighbors.push(grid[i][j-1])
-
-
-//		if (i < cols - 1) this.neighbors.push(grid[i + 1][j])
-//   	if (i > 0)  this.neighbors.push(grid[i - 1][j]);
-
-//   	if (j < rows - 1) this.neighbors.push(grid[i][j + 1]);
-  
-//   	if (j > 0) this.neighbors.push(grid[i][j - 1]);
-  
-
-// 		if (i > 0 && j > 0) this.neighbors.push(grid[i - 1][j - 1]);
-  
-
-//   	if (i < cols - 1 && j > 0) this.neighbors.push(grid[i + 1][j - 1]);
-
-//   	if (i > 0 && j < rows - 1) this.neighbors.push(grid[i - 1][j + 1]);
-  
-//   	if (i < cols - 1 && j < rows - 1) this.neighbors.push(grid[i + 1][j + 1]);
-      
-
-    }
-
-}
 
 
 
 function removeFromArray(array, element)
 {
-	for (var i=array.length; i>=0; i--)
+	for (let i=array.length; i>=0; i--)
 	{
 
 		if (array[i] == element)
@@ -316,9 +237,9 @@ function removeFromArray(array, element)
 
 function heuristic(a, b)
 {
-	//let d = dist(a.i, a.j, b.i, b.j)
+	let d = dist(a.i, a.j, b.i, b.j)
 
-	let d = abs(a.i-b.i) + abs(a.j-b.j)
+	//let d = abs(a.i-b.i) + abs(a.j-b.j)
 
 	return d
 }
