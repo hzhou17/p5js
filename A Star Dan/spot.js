@@ -20,8 +20,6 @@ class Spot
 		{
 			this.wall = true
 		}
-
-		
 	}
 
 	show(color)
@@ -35,7 +33,6 @@ class Spot
 		{
 			fill(0)
 		}
-
 
 
 		rect(this.i*w, this.j*h, w, h)

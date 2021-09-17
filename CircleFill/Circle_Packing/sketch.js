@@ -1,31 +1,16 @@
 let circles = []
 
-let collide_num = 0
-let protection = 0
-
 let radiusMin = 5
+
+let maxNum = 500
+
+let circleNum = 0
 
 function setup() 
 {
-	createCanvas(640, 360);
+	createCanvas(500, 360);
 	colorMode(RGB, 1)
 	noFill()
-
-	// for (let i=0; i<10; i++)
-	// {
-	// 	circles.push(new Circle())
-	// }
-
-
-	// for (let i of circles)
-	// {
-	// 	i.show()
-	// 	//print(i.x)
-	// 	//print(i.y)
-	// }
-
-
-
 } 
     
 
@@ -34,15 +19,18 @@ function draw()
 	background(0.5)
 
 	//circles.push(new Circle(random(width), random(height)))
-	let circle = newCircle()
 
+	if (circleNum < maxNum)
+	{
+		let circle = newCircle()
+		circleNum += 1
+	}
+
+	//print(circleNum)
 	// if (circle !== null)
 	// {
 	// 	circles.push(circle)
 	// }
-
-
-
 
 	for (let i of circles)
 	{
@@ -107,9 +95,6 @@ function newCircle()
 }
 
 
-
-
-
 class Circle
 {
 	constructor(x, y)
@@ -142,7 +127,4 @@ class Circle
 				this.y+this.r > height)
 	}
 
-
-
 }
-  

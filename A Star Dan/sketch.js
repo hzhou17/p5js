@@ -86,8 +86,7 @@ function draw()
 	//background(0)
 
 	if (openSet.length > 0)
-	{
-		
+	{		
 		let winnerIndex = 0;
 
 		for (let i=0; i<openSet.length; i++)
@@ -108,10 +107,8 @@ function draw()
 			print("Done")
 		}
 
-
 		removeFromArray(openSet, current)
 		closedSet.push(current)
-
 
 
 		let neighbors = current.neighbors
@@ -205,7 +202,7 @@ function draw()
 
 	}
 
-	print(openSet.length)
+	//print(openSet.length)
 
 	for (let i of path)
 	{
