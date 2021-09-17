@@ -8,34 +8,31 @@ class Building
         this.ratio = this.y / this.x;
 
 
-    if (this.ratio  > 50 )
-    {
-      this.x *= remap(this.ratio, 0, 150, 0, 100);
-    }
+        if (this.ratio  > 50 )
+        {
+          this.x *= remap(this.ratio, 0, 150, 0, 100);
+        }
 
 
-    this.offset = 0;
+        this.offset = 0;
 
-    this.offset += this.x ;
-
+        this.offset += this.x 
 
     }
 
 
     show()
     {
-      push()
+        push()
 
-        fill(0.3)
+            fill(0.3)
 
-        rect(this.x, this.y, this.x, height)
+            rect(this.x, this.y, this.x, height)
 
-      pop()
-
-
-      translate(this.offset, 0)
+        pop()
 
 
+        translate(this.offset, 0)
     }
 
 }

@@ -12,7 +12,7 @@ class Backlayer extends Building
 
     show()
     {
-      rect(this.x + 50, this.y - 100, this.x, height)
+        rect(this.x + 50, this.y - 100, this.x, height)
 
       //translate(this.x_off, this.y_off)
     }
